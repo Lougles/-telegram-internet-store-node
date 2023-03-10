@@ -1,8 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '6058412115:AAGX3b6uDAAGeB-vXNDo2DSLe5og8SzV3nk';
 const webAppUrl = 'https://main--deft-licorice-f610e5.netlify.app';
 
-const bot = new TelegramBot(token, {polling: true});
 const express = require('express');
 
 const cors = require('cors');
@@ -10,6 +8,9 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+require('dotenv').config();
+const token = process.env.BOT_TOKEN;
+const bot = new TelegramBot(token, {polling: true});
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -39,10 +40,7 @@ bot.on('message', async (msg) => {
             await bot.sendMessage(chatId, 'Спасибо за обратную связь!')
             await bot.sendMessage(chatId, 'Ваша страна: ' + data?.country);
             await bot.sendMessage(chatId, 'Ваша улица: ' + data?.street);
-
-            setTimeout(async () => {
-                await bot.sendMessage(chatId, 'Всю информацию вы получите в этом чате');
-            }, 3000)
+            await bot.sendMessage(chatId, 'Всю информацию вы получите в этом чате');
         } catch (e) {
             console.log(e);
         }
@@ -51,6 +49,7 @@ bot.on('message', async (msg) => {
 
 app.post('/web-data', async (req, res) => {
     const {queryId, products = [], totalPrice} = req.body;
+    console.log('qwerty')
     try {
         await bot.answerWebAppQuery(queryId, {
             type: 'article',
